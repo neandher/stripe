@@ -1,0 +1,103 @@
+title: Stripe Level 2: Subscriptions, Discounts, Webhooks, oh my!
+
+summary: |
+    After [Part 1](http://knpuniversity.com/screencast/stripe) of the tutorial,
+    you are *rocking* with Stripe: Charges, Customer, Invoices and error-handling
+    are old news.
+
+    Now it's time to take our sheep-shearing startup to the next level: by offering
+    a monthly subscription service. Woh.
+
+    - Learn to create and charge subscriptions!
+    - Store the card type and last 4 to show your user
+    - Update a customer's credit card
+    - Handle cancellations... and reactivations!
+    - Use web-hooks to handle renewal payments, cancellation, payment failures
+    - Upgrading/Downgrading a subscription *correctly* with prorations
+    - Offer Coupons and even free subscriptions to awesome people!
+    - Giving your user's high-quality invoices
+
+    Oh, the possibilities are endless: create a subscription service that treats
+    your customers right.
+
+illustration: stripe2.png
+
+tuts_hero:
+    start_step: subscription-prep-user-entity-changes
+    finish_step: invoice-render-single-invoice
+
+chapters:
+    creating-plans:
+        is_free:   true
+        video_key: 180641715
+    add-plan-to-cart:
+        is_free:   true
+        video_key: 180643039
+    make-the-subscription:
+        is_free:   true
+        video_key: 180644777
+    user-has-subscription:
+        is_free:   true
+        video_key: 180647158
+    card-last4:
+        video_key: 180648342
+    billing-periods-ends-at:
+        video_key: 180661092
+    canceling-stripe-subscription:
+        video_key: 181228865
+    canceling-on-our-site:
+        video_key: 181230231
+    reactivate-subscription:
+        video_key: 181231228
+    cancelation-edge-case-bugs:
+        video_key: 181231424
+    update-card-form:
+        video_key: 182593499
+    update-card-processing:
+        video_key: 182596162
+    card-update-failure:
+        video_key: 182594657
+    stripe-events-webhook:
+        video_key: 182595452
+    webhook-endpoint-setup:
+        video_key: 182596342
+    subscription-canceled-webhook:
+        video_key: 182601300
+    testing-webhooks:
+        video_key: 182602437
+    testing-webhooks-fake-event:
+        video_key: 182621794
+    live-webhook-testing-ngrok:
+        video_key: 182620777
+    subscription-renewal-webhook:
+        video_key: 182623409
+    payment-failed-webhook:
+        video_key: 183888289
+    replay-attacks:
+        video_key: 183891531
+    plan-upgrade-ui:
+        video_key: 183891774
+    calculate-upgrade-cost:
+        video_key: 183891815
+    upgrade-upcoming-invoice-process:
+        video_key: 183898694
+    execute-plan-upgrade:
+        video_key: 183896440
+    plan-change-payment-failure:
+        video_key: 183899728
+    monthly-to-yearly:
+        video_key: 183900792
+    monthly-yearly-billing-period:
+        video_key: 183902491
+    coupon-code-form:
+        video_key: 183904396
+    validating-coupons:
+        video_key: 183906388
+    apply-coupon-checkout:
+        video_key: 183914219
+    free-checkout:
+        video_key: 183917436
+    sweet-invoices:
+        video_key: 183915036
+    display-invoice-details:
+        video_key: 183915869

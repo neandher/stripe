@@ -36,7 +36,7 @@
                 <form action="" method="POST">
                     <script
                             src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                            data-key="pk_test_ACeSCnoG5gPk3w56ZtwUfpGZ"
+                            data-key="{{ stripe_public_key }}"
                             data-amount="{{ cart.total * 100 }}"
                             data-name="Dollar Shear Club"
                             data-description="Widget"

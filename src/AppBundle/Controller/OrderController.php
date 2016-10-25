@@ -37,7 +37,7 @@ class OrderController extends BaseController
         if($request->isMethod('POST')){
             $token = $request->request->get('stripeToken');
 
-            Stripe::setApiKey("sk_test_lSdUzJqReQWa087s4svMqTu1");
+            Stripe::setApiKey($this->getParameter('stripe_secret_key'));
             Charge::create(array(
                 "amount" => $this->get('shopping_cart')->getTotal() * 100,
                 "currency" => "usd",
@@ -53,7 +53,8 @@ class OrderController extends BaseController
 
         return $this->render('order/checkout.html.twig', array(
             'products' => $products,
-            'cart' => $this->get('shopping_cart')
+            'cart' => $this->get('shopping_cart'),
+            'stripe_public_key' => $this->getParameter('stripe_public_key')
         ));
 
     }

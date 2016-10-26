@@ -9,6 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Stripe\Charge;
 use Stripe\Customer;
+use Stripe\Invoice;
+use Stripe\InvoiceItem;
 use Stripe\Stripe;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -59,16 +61,36 @@ class OrderController extends BaseController
                 $em->flush();
             } else {
                 $customer = Customer::retrieve($user->getStripeCustomerId());
-                $customer->default_source = $token;
+                $customer->source = $token;
                 $customer->save();
             }
 
-            Charge::create(array(
+            /*Charge::create(array(
                 "amount" => $this->get('shopping_cart')->getTotal() * 100,
                 "currency" => "usd",
                 "customer" => $user->getStripeCustomerId(),
                 "description" => "First test charge!"
-            ));
+            ));*/
+
+            foreach ($this->get('shopping_cart')->getProducts() as $product) {
+
+                InvoiceItem::create(
+                    array(
+                        "amount" => $product->getPrice() * 100,
+                        "currency" => "usd",
+                        "customer" => $user->getStripeCustomerId(),
+                        "description" => $product->getName()
+                    )
+                );
+            }
+
+            $invoice = Invoice::create(
+                array(
+                    "customer" => $user->getStripeCustomerId()
+                )
+            );
+
+            $invoice->pay();
 
             $this->get('shopping_cart')->emptyCart();
             $this->addFlash('success', 'Order Complete! Yay!');

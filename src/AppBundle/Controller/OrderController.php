@@ -38,49 +38,60 @@ class OrderController extends BaseController
     {
         $products = $this->get('shopping_cart')->getProducts();
 
+        $error = false;
+
         if ($request->isMethod('POST')) {
 
             $token = $request->request->get('stripeToken');
 
-            $stripeClient = $this->get('stripe_client');
-
-            /** @var User $user */
-            $user = $this->getUser();
-
-            if (!$user->getStripeCustomerId()) {
-                $stripeClient->createCustomer($user, $token);
-            } else {
-                $stripeClient->updateCustomerCard($user, $token);
+            try {
+                $this->chargeCustomer($token);
+            } catch (\Stripe\Error\Card $e) {
+                $error = 'There was a problem charging your card: ' . $e->getMessage();
             }
 
-            /*Charge::create(array(
-                "amount" => $this->get('shopping_cart')->getTotal() * 100,
-                "currency" => "usd",
-                "customer" => $user->getStripeCustomerId(),
-                "description" => "First test charge!"
-            ));*/
+            if (!$error) {
+                $this->get('shopping_cart')->emptyCart();
+                $this->addFlash('success', 'Order Complete! Yay!');
 
-            foreach ($this->get('shopping_cart')->getProducts() as $product) {
-                $stripeClient->createInvoiceItem(
-                    $product->getPrice(),
-                    $user,
-                    $product->getName()
-                );
+                return $this->redirectToRoute('homepage');
             }
-
-            $stripeClient->createInvoice($user, true);
-
-            $this->get('shopping_cart')->emptyCart();
-            $this->addFlash('success', 'Order Complete! Yay!');
-
-            return $this->redirectToRoute('homepage');
         }
 
         return $this->render('order/checkout.html.twig', array(
             'products' => $products,
             'cart' => $this->get('shopping_cart'),
-            'stripe_public_key' => $this->getParameter('stripe_public_key')
+            'stripe_public_key' => $this->getParameter('stripe_public_key'),
+            'error' => $error
         ));
 
+    }
+
+    /**
+     * @param $token
+     * @throws \Stripe\Error\Card
+     */
+    private function chargeCustomer($token)
+    {
+        $stripeClient = $this->get('stripe_client');
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if (!$user->getStripeCustomerId()) {
+            $stripeClient->createCustomer($user, $token);
+        } else {
+            $stripeClient->updateCustomerCard($user, $token);
+        }
+
+        foreach ($this->get('shopping_cart')->getProducts() as $product) {
+            $stripeClient->createInvoiceItem(
+                $product->getPrice(),
+                $user,
+                $product->getName()
+            );
+        }
+
+        $stripeClient->createInvoice($user, true);
     }
 }

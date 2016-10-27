@@ -42,27 +42,15 @@ class OrderController extends BaseController
 
             $token = $request->request->get('stripeToken');
 
-            Stripe::setApiKey($this->getParameter('stripe_secret_key'));
+            $stripeClient = $this->get('stripe_client');
 
             /** @var User $user */
             $user = $this->getUser();
 
             if (!$user->getStripeCustomerId()) {
-
-                $customer = Customer::create([
-                    'email' => $user->getEmail(),
-                    'source' => $token
-                ]);
-
-                $user->setStripeCustomerId($customer->id);
-
-                $em = $this->getDoctrine()->getManager();
-                $em->persist($user);
-                $em->flush();
+                $stripeClient->createCustomer($user, $token);
             } else {
-                $customer = Customer::retrieve($user->getStripeCustomerId());
-                $customer->source = $token;
-                $customer->save();
+                $stripeClient->updateCustomerCard($user, $token);
             }
 
             /*Charge::create(array(
@@ -73,24 +61,14 @@ class OrderController extends BaseController
             ));*/
 
             foreach ($this->get('shopping_cart')->getProducts() as $product) {
-
-                InvoiceItem::create(
-                    array(
-                        "amount" => $product->getPrice() * 100,
-                        "currency" => "usd",
-                        "customer" => $user->getStripeCustomerId(),
-                        "description" => $product->getName()
-                    )
+                $stripeClient->createInvoiceItem(
+                    $product->getPrice(),
+                    $user,
+                    $product->getName()
                 );
             }
 
-            $invoice = Invoice::create(
-                array(
-                    "customer" => $user->getStripeCustomerId()
-                )
-            );
-
-            $invoice->pay();
+            $stripeClient->createInvoice($user, true);
 
             $this->get('shopping_cart')->emptyCart();
             $this->addFlash('success', 'Order Complete! Yay!');

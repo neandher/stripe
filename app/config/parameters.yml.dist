@@ -20,3 +20,4 @@ parameters:
 
     stripe_secret_key: ~
     stripe_public_key: ~
+    secure_channel: https
